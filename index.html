@@ -80,6 +80,7 @@
   </div>
 
   <div class="idrow" style="margin-top:18px;">
+    <input type="text" id="ushop" placeholder="店舗（例: 帯広店）">
     <input type="text" id="uname" placeholder="名前（例: 山田 花子）">
     <input type="text" id="urole" placeholder="役割（例: カウンセラー）">
     <select id="startMonth" aria-label="ふりかえる期間の開始月"></select>
@@ -167,17 +168,10 @@
    手順は同梱の「設定手順書」参照。空のままなら送信は
    スキップされ、完了カードだけ表示されます。
 ===================================================== */
-const FORM = {
-  action: "",  // 例: "https://docs.google.com/forms/d/e/XXXXXXXX/formResponse"
-  fields: {
-    name:   "entry.1111111111",  // 名前
-    role:   "entry.2222222222",  // 役割
-    period: "entry.3333333333",  // 期間（例: 2025年12月〜2026年5月）
-    wave:   "entry.4444444444",  // 気持ちの波（例: 7,4,8,3,6,9）
-    moved:  "entry.5555555555",  // 心が動いたこと（月・内容・気持ち・なぜ）
-    notes:  "entry.6666666666"   // 兆しと姿勢（まとめ）
-  }
-};
+/*  ★ 設定（1回だけ）：GASのウェブアプリURLを、下のENDPOINTに貼るだけ。
+    手順は同梱の「GAS連携ガイド」参照。空のままなら送信せず、完了カードだけ出ます。 */
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbxuL3lJEGrfj2eBf9Hpp0CcrgFaq-3qAw-NNcYLEf_N-uOKW8Sb1OmC_E1FDUARdQkO0A/exec";
+
 /* ===================================================== */
 
 const STANCES = ["心を開く","違和感を置かない","怖い方を選ぶ","全部出す","仲間の言葉を、兆しとして受け取る"];
@@ -188,7 +182,7 @@ const QS = [
   ["d","数字（売上）が動いた？","例) 個人売上が、目標を超えた月があった"]
 ];
 let MONTHS = [];
-let state = { name:"", role:"", startMonth:12, wave:[5,5,5,5,5,5], waveTouched:[false,false,false,false,false,false],
+let state = { shop:"", name:"", role:"", startMonth:12, wave:[5,5,5,5,5,5], waveTouched:[false,false,false,false,false,false],
   signs:{}, stances:[], stanceNote:"", movedMonth:"", movedWhat:"", feel:"", from:"", value:"", want:"" };
 
 function monthsFrom(start){ const a=[]; for(let i=0;i<6;i++){a.push(((start-1+i)%12)+1+"月");} return a; }
@@ -290,6 +284,7 @@ document.getElementById("want").addEventListener("input",e=>{state.want=e.target
 document.getElementById("uname").addEventListener("input",e=>{state.name=e.target.value; save();});
 document.getElementById("uname").addEventListener("change",load);
 document.getElementById("urole").addEventListener("input",e=>{state.role=e.target.value; save();});
+document.getElementById("ushop").addEventListener("input",e=>{state.shop=e.target.value; save();});
 
 /* ---- 進捗 ---- */
 function stepDone(idx){
@@ -333,6 +328,7 @@ function load(){
     if(!raw)return;
     state={...state,...JSON.parse(raw)};
     sm.value=state.startMonth;
+    document.getElementById("ushop").value=state.shop||"";
     document.getElementById("urole").value=state.role||"";
     chips.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",state.stances.includes(c.textContent)));
     document.getElementById("stanceNote").value=state.stanceNote||"";
@@ -359,22 +355,24 @@ document.getElementById("finishBtn").addEventListener("click",async ()=>{
   document.getElementById("dcValue").textContent=state.value||"―";
   card.style.display="block"; card.scrollIntoView({behavior:"smooth"});
   save();
-  // Googleフォームへ送信（設定済みのときだけ）
-  if(FORM.action){
+  // GASへ送信（42項目のJSON。設定済みのときだけ）
+  if(ENDPOINT && ENDPOINT!=="PASTE_GAS_WEBAPP_URL"){
     try{
-      const period=MONTHS[0]+"〜"+MONTHS[5];
-      const signsTxt=Object.entries(state.signs).filter(([k,v])=>v&&v.trim())
-        .map(([k,v])=>{const [mi,kk]=k.split("_");return MONTHS[+mi]+" "+kk+"："+v.trim();}).join(" ／ ");
-      const notes="【姿勢】"+(state.stances.join("・")||"―")+(state.stanceNote?"（"+state.stanceNote+"）":"")+"　【兆し】"+(signsTxt||"―");
-      const moved=(state.movedMonth||"―")+"：「"+(state.movedWhat||"―")+"」 ①気持ち＝"+(state.feel||"―")+" ②どこから＝"+(state.from||"―")+" ③大事にしてる＝"+(state.value||"―")+" ④どうしたい＝"+(state.want||"―");
-      const fd=new FormData();
-      fd.append(FORM.fields.name, state.name||"（無記名）");
-      fd.append(FORM.fields.role, state.role||"");
-      fd.append(FORM.fields.period, period);
-      fd.append(FORM.fields.wave, state.wave.join(","));
-      fd.append(FORM.fields.moved, moved);
-      fd.append(FORM.fields.notes, notes);
-      await fetch(FORM.action,{method:"POST",mode:"no-cors",body:fd});
+      const payload={
+        timestamp:new Date().toISOString(),
+        shop:state.shop||"", name:state.name||"（無記名）", role:state.role||"",
+        startMonth:state.startMonth, period:MONTHS[0]+"〜"+MONTHS[5],
+        months:MONTHS,
+        wave:state.wave,
+        waveTouched:state.waveTouched,
+        signs:state.signs,           // {"0_a":"...","2_c":"..."} 月index×a-d
+        stances:state.stances, stanceNote:state.stanceNote,
+        movedMonth:state.movedMonth, movedWhat:state.movedWhat,
+        feel:state.feel, from:state.from, value:state.value, want:state.want
+      };
+      await fetch(ENDPOINT,{method:"POST",mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload)});
       document.getElementById("savemsg").textContent="送信しました。ありがとうございました。";
     }catch(e){
       document.getElementById("savemsg").textContent="送信できませんでした。電波の良い場所で、もう一度お試しください。";
