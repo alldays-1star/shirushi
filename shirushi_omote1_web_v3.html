@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>兆しシート 面1 ― この半年を、ふりかえる</title>
+<style>
+  :root{ --bk:#1A1A1A; --gy:#4F4F4F; --lg:#9A9A9A; --ln:#C9C9C9; --rl:#D9D9D9; --in:#F3F3F1; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:Arial, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif; background:#FFF; color:var(--gy); line-height:1.7;}
+  .wrap{max-width:720px; margin:0 auto; padding:32px 20px 80px;}
+  .eyebrow{font-size:11px; letter-spacing:.18em; color:var(--lg);}
+  h1{font-size:22px; color:var(--bk); margin:6px 0 2px; font-weight:bold;}
+  .tag{font-size:12px; color:var(--lg); margin-bottom:22px;}
+  .hr{border:none; border-top:1px solid var(--ln); margin:20px 0;}
+  .prog{position:sticky; top:0; background:#fff; padding:10px 0 8px; z-index:5;}
+  .prog .bar{height:3px; background:var(--rl); border-radius:2px; overflow:hidden;}
+  .prog .fill{height:100%; width:0%; background:var(--bk); transition:width .4s ease;}
+  .prog .lbl{display:flex; justify-content:space-between; font-size:11px; color:var(--lg); margin-top:5px;}
+  section{margin:34px 0;}
+  .stepnum{display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border:1px solid var(--bk); border-radius:50%; font-size:12px; color:var(--bk); font-weight:bold; margin-right:8px; flex:none;}
+  .stephead{display:flex; align-items:center; font-size:15px; color:var(--bk); font-weight:bold; margin-bottom:4px;}
+  .stepnote{font-size:12px; color:var(--lg); margin:0 0 14px 32px;}
+  .done .stepnum{background:var(--bk); color:#fff;}
+  .idrow{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:6px;}
+  .idrow input, .idrow select{flex:1; min-width:130px;}
+  input[type=text], textarea, select{
+    font-family:inherit; font-size:14px; color:var(--bk);
+    background:var(--in); border:none; border-bottom:1px solid var(--rl);
+    padding:10px 12px; width:100%; border-radius:2px;
+  }
+  textarea{resize:vertical; min-height:44px;}
+  input:focus, textarea:focus, select:focus{outline:none; border-bottom:1px solid var(--bk); background:#EFEFEC;}
+  ::placeholder{color:var(--lg); font-size:12.5px;}
+  .wavebox{border:1px solid var(--ln); border-radius:4px; padding:14px 14px 6px;}
+  .wave-svg{width:100%; height:150px; display:block;}
+  .sliders{display:grid; grid-template-columns:repeat(6,1fr); gap:6px; margin-top:8px;}
+  .mcol{text-align:center;}
+  .mcol .mname{font-size:11px; color:var(--bk); font-weight:bold;}
+  .mcol .mval{font-size:12px; color:var(--gy); min-height:18px;}
+  input[type=range]{-webkit-appearance:none; appearance:none; width:100%; height:110px;
+    writing-mode:vertical-lr; direction:rtl; background:transparent; cursor:pointer;}
+  input[type=range]::-webkit-slider-runnable-track{background:var(--rl); width:3px; border-radius:2px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid var(--bk); margin-left:-8px;}
+  input[type=range]::-moz-range-track{background:var(--rl); width:3px;}
+  input[type=range]::-moz-range-thumb{width:16px; height:16px; border-radius:50%; background:#fff; border:2px solid var(--bk);}
+  .axis{display:flex; justify-content:space-between; font-size:10.5px; color:var(--lg); margin-top:4px;}
+  .mcard{border:1px solid var(--ln); border-radius:4px; padding:14px; margin:10px 0;}
+  .mcard h3{font-size:14px; color:var(--bk); margin-bottom:2px;}
+  .mcard .hint{font-size:11px; color:var(--lg); margin-bottom:10px;}
+  .qrow{margin:10px 0;}
+  .qrow label{display:block; font-size:12px; color:var(--gy); margin-bottom:4px;}
+  .qrow label b{color:var(--bk);}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 12px 32px;}
+  .chip{font-size:12px; border:1px solid var(--ln); border-radius:14px; padding:5px 12px; color:var(--gy); cursor:pointer; user-select:none;}
+  .chip.on{border-color:var(--bk); color:var(--bk); font-weight:bold;}
+  .indent{margin-left:32px;}
+  .btn{font-family:inherit; font-size:14px; padding:12px 22px; border:1px solid var(--bk); background:#fff; color:var(--bk); border-radius:3px; cursor:pointer;}
+  .btn.primary{background:var(--bk); color:#fff;}
+  .btn:active{transform:scale(.98);}
+  .savebar{font-size:11px; color:var(--lg); text-align:right; margin-top:4px; min-height:16px;}
+  #doneCard{display:none; border:1px solid var(--bk); border-radius:4px; padding:22px; margin-top:26px;}
+  #doneCard .dc-eyebrow{font-size:11px; letter-spacing:.16em; color:var(--lg);}
+  #doneCard h2{font-size:18px; color:var(--bk); margin:4px 0 10px;}
+  #doneCard .dc-wave{width:100%; height:110px;}
+  #doneCard .dc-row{margin:10px 0; font-size:13.5px;}
+  #doneCard .dc-row b{color:var(--bk);}
+  .footer{margin-top:40px; font-size:11px; color:var(--lg); border-top:1px solid var(--rl); padding-top:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">MIRAI SOZO MTG ― SHIRUSHI SHEET 1</div>
+  <h1>この半年を、ふりかえる</h1>
+  <div class="tag">①から⑥へ、順番に。考えるより、感覚で。入力は、この端末に自動で残ります。</div>
+
+  <div class="prog">
+    <div class="bar"><div class="fill" id="pfill"></div></div>
+    <div class="lbl"><span id="plabel">はじめましょう</span><span id="ppct">0%</span></div>
+  </div>
+
+  <div class="idrow" style="margin-top:18px;">
+    <input type="text" id="uname" placeholder="名前（例: 山田 花子）">
+    <input type="text" id="urole" placeholder="役割（例: カウンセラー）">
+    <select id="startMonth" aria-label="ふりかえる期間の開始月"></select>
+  </div>
+
+  <hr class="hr">
+
+  <section id="s1">
+    <div class="stephead"><span class="stepnum">1</span>気持ちの波を、描く</div>
+    <p class="stepnote">各月のつまみを、指で上下に。1=しんどい ／ 10=良い。動かすと、波が生まれます。</p>
+    <div class="wavebox">
+      <svg class="wave-svg" id="wave" viewBox="0 0 600 150" preserveAspectRatio="none" aria-label="気持ちの波のグラフ"></svg>
+      <div class="sliders" id="sliders"></div>
+      <div class="axis"><span>1 = しんどい</span><span>10 = 良い</span></div>
+    </div>
+  </section>
+
+  <section id="s2">
+    <div class="stephead"><span class="stepnum">2</span>波を、ながめる</div>
+    <p class="stepnote">山と谷は、どの月でしたか。<span id="peakvalley" style="color:var(--bk);"></span></p>
+  </section>
+
+  <section id="s3">
+    <div class="stephead"><span class="stepnum">3</span>各月の“兆し”を、思い出す</div>
+    <p class="stepnote">全部埋めなくて大丈夫。思い出せる月だけで。</p>
+    <div id="monthCards"></div>
+  </section>
+
+  <section id="s4">
+    <div class="stephead"><span class="stepnum">4</span>5つの姿勢が“出た”瞬間は？</div>
+    <p class="stepnote">この半年、どの姿勢が出ましたか（いくつでも）。出た場面をひとこと。</p>
+    <div class="chips" id="chips"></div>
+    <div class="indent" style="margin:0 0 8px;"><a href="https://drive.google.com/file/d/1WdgA9K9cTfQqdp2V2_C3k5qgqbeO6ubl/view" target="_blank" rel="noopener" style="font-size:12px;color:var(--gy);border-bottom:1px solid var(--ln);">5つの姿勢とは？（開く）</a></div>
+    <div class="indent"><textarea id="stanceNote" placeholder="例) 3月＝怖い方を選ぶ（初めてのモデル撮影に挑戦した）"></textarea></div>
+  </section>
+
+  <section id="s5">
+    <div class="stephead"><span class="stepnum">5</span>この半年で、いちばん心が動いたのは？</div>
+    <p class="stepnote">「印象的」ではなく、心が動いたほう。波の谷や山から、1つだけ。</p>
+    <div class="indent">
+      <select id="movedMonth"><option value="">月を選ぶ</option></select>
+      <div style="height:8px"></div>
+      <textarea id="movedWhat" placeholder="例) ○月に△△が起きたこと"></textarea>
+    </div>
+  </section>
+
+  <section id="s6">
+    <div class="stephead"><span class="stepnum">6</span>そのとき、どんな気持ちだった？</div>
+    <p class="stepnote">一問ずつ、ゆっくり降りていきます。え、そんなところまで、と思うくらいで。</p>
+    <div class="indent">
+      <div class="qrow"><label>① そのとき、どんな気持ちだった？<span style="color:var(--lg)">（嬉しい・悔しい・怖い・気持ちよかった・誇らしい・寂しい…）</span></label>
+        <textarea id="feel" placeholder="例) 悔しかった。でも翌日には前を向いていた"></textarea></div>
+      <div class="qrow"><label>② その気持ちは、どこから来たと思う？</label>
+        <textarea id="from" placeholder="例) 本気でやってたのに、届かなかったから"></textarea></div>
+      <div class="qrow"><label>③ それって、あなたが本当は何を大事にしてる、ということ？</label>
+        <textarea id="value" placeholder="例) お客様を、ちゃんと喜ばせたい"></textarea></div>
+      <div class="qrow"><label>④ じゃあ、これからどうしたい？<span style="color:var(--lg)">（書ける人だけでOK）</span></label>
+        <textarea id="want" placeholder="例) 次は、自分から仕掛ける側になりたい"></textarea></div>
+    </div>
+  </section>
+
+  <div class="indent" style="margin-top:24px;">
+    <button class="btn primary" id="finishBtn">これで、ふりかえり完了（送信）</button>
+    <div class="savebar" id="savemsg"></div>
+  </div>
+
+  <div id="doneCard">
+    <div class="dc-eyebrow">HANDS-ON COMPLETE</div>
+    <h2 id="dcTitle">おつかれさまでした。</h2>
+    <svg class="dc-wave" id="dcWave" viewBox="0 0 600 110" preserveAspectRatio="none"></svg>
+    <div class="dc-row"><b>いちばん心が動いた：</b><span id="dcMoved">―</span></div>
+    <div class="dc-row"><b>そのときの気持ち：</b><span id="dcFeel">―</span></div>
+    <div class="dc-row"><b>本当は、大事にしてること：</b><span id="dcValue">―</span></div>
+    <div class="dc-row" style="color:var(--lg); font-size:12px;">この続き――ここからの深さと、あなたの“ついた実力”は、当日いっしょに言葉にします。すべての日に、兆しがある。</div>
+    <div style="margin-top:16px;"><a class="btn" href="https://drive.google.com/file/d/15Bmfvx-Uw1g7B_ZQSeisNz2P2tyHBoSy/view" target="_blank" rel="noopener">次は、個人ワークへ →</a></div>
+  </div>
+
+  <div class="footer">未来創造MTG ・ 兆しシート 面1 ／ 株式会社ALLDAYS　※ 入力はこの端末に自動保存。同じ端末・同じ名前で開くと、続きから再開できます。</div>
+</div>
+
+<script>
+/* =====================================================
+   ★ 設定（上村さんが1回だけ触る場所）
+   Googleフォームを作って、下の2つを貼り替えてください。
+   手順は同梱の「設定手順書」参照。空のままなら送信は
+   スキップされ、完了カードだけ表示されます。
+===================================================== */
+const FORM = {
+  action: "",  // 例: "https://docs.google.com/forms/d/e/XXXXXXXX/formResponse"
+  fields: {
+    name:   "entry.1111111111",  // 名前
+    role:   "entry.2222222222",  // 役割
+    period: "entry.3333333333",  // 期間（例: 2025年12月〜2026年5月）
+    wave:   "entry.4444444444",  // 気持ちの波（例: 7,4,8,3,6,9）
+    moved:  "entry.5555555555",  // 心が動いたこと（月・内容・気持ち・なぜ）
+    notes:  "entry.6666666666"   // 兆しと姿勢（まとめ）
+  }
+};
+/* ===================================================== */
+
+const STANCES = ["心を開く","違和感を置かない","怖い方を選ぶ","全部出す","仲間の言葉を、兆しとして受け取る"];
+const QS = [
+  ["a","お客様や仲間と、想像以上の良いことが起きた？","例) 常連のお客様が「あなたに」と指名してくれた"],
+  ["b","大変な状況でも、プロとして踏ん張れた？","例) 忙しい時期でも、仕上がりの質を落とさなかった"],
+  ["c","チームや誰かと、うまく連携できた？","例) 別の担当と、段取りを一緒に組めた"],
+  ["d","数字（売上）が動いた？","例) 個人売上が、目標を超えた月があった"]
+];
+let MONTHS = [];
+let state = { name:"", role:"", startMonth:12, wave:[5,5,5,5,5,5], waveTouched:[false,false,false,false,false,false],
+  signs:{}, stances:[], stanceNote:"", movedMonth:"", movedWhat:"", feel:"", from:"", value:"", want:"" };
+
+function monthsFrom(start){ const a=[]; for(let i=0;i<6;i++){a.push(((start-1+i)%12)+1+"月");} return a; }
+
+/* ---- 開始月セレクト ---- */
+const sm=document.getElementById("startMonth");
+for(let m=1;m<=12;m++){const o=document.createElement("option");o.value=m;o.textContent="開始月: "+m+"月（〜"+(((m+4)%12)+1)+"月）";sm.appendChild(o);}
+sm.value=12;
+sm.addEventListener("change",()=>{state.startMonth=+sm.value; rebuildMonths(); save();});
+
+/* ---- 月依存UIの構築 ---- */
+function rebuildMonths(){
+  MONTHS=monthsFrom(state.startMonth);
+  // sliders
+  const sl=document.getElementById("sliders"); sl.innerHTML="";
+  MONTHS.forEach((m,i)=>{
+    const col=document.createElement("div"); col.className="mcol";
+    col.innerHTML=`<div class="mname">${m}</div>
+      <input type="range" min="1" max="10" step="1" value="${state.wave[i]}" data-i="${i}" aria-label="${m}の気持ち">
+      <div class="mval" id="val${i}">${state.waveTouched[i]?state.wave[i]:"·"}</div>`;
+    sl.appendChild(col);
+  });
+  // month cards
+  const mc=document.getElementById("monthCards"); mc.innerHTML="";
+  MONTHS.forEach((m,mi)=>{
+    const card=document.createElement("div"); card.className="mcard";
+    let inner=`<h3>${m}</h3><div class="hint">この月、こんなことなかった？</div>`;
+    QS.forEach(([k,q,ph])=>{
+      const key=mi+"_"+k;
+      inner+=`<div class="qrow"><label><b>${k}｜</b>${q}</label>
+        <textarea data-m="${mi}" data-k="${k}" placeholder="${ph}">${state.signs[key]||""}</textarea></div>`;
+    });
+    card.innerHTML=inner; mc.appendChild(card);
+  });
+  // moved-month select
+  const mv=document.getElementById("movedMonth");
+  mv.innerHTML='<option value="">月を選ぶ</option>';
+  MONTHS.forEach(m=>{const o=document.createElement("option");o.value=m;o.textContent=m;mv.appendChild(o);});
+  mv.value=MONTHS.includes(state.movedMonth)?state.movedMonth:"";
+  drawWave(); peakValley(); progress();
+}
+
+/* ---- イベント（委譲） ---- */
+document.getElementById("sliders").addEventListener("input",e=>{
+  if(e.target.type!=="range")return;
+  const i=+e.target.dataset.i; state.wave[i]=+e.target.value; state.waveTouched[i]=true;
+  document.getElementById("val"+i).textContent=state.wave[i];
+  drawWave(); peakValley(); progress(); save();
+});
+document.getElementById("monthCards").addEventListener("input",e=>{
+  if(e.target.tagName!=="TEXTAREA")return;
+  state.signs[e.target.dataset.m+"_"+e.target.dataset.k]=e.target.value; progress(); save();
+});
+
+/* ---- 波の描画 ---- */
+function wavePath(vals,w,h,pad){
+  const n=vals.length, iw=w-pad*2, ih=h-pad*2;
+  return vals.map((v,i)=>{
+    const x=pad+iw*(i/(n-1)), y=pad+ih*(1-(v-1)/9);
+    return (i?"L":"M")+x.toFixed(1)+","+y.toFixed(1);
+  }).join(" ");
+}
+function drawWave(){
+  const svg=document.getElementById("wave");
+  let dots="";
+  state.wave.forEach((v,i)=>{
+    if(!state.waveTouched[i])return;
+    const x=16+(600-32)*(i/5), y=16+(150-32)*(1-(v-1)/9);
+    dots+=`<circle cx="${x}" cy="${y}" r="4" fill="#FFF" stroke="#1A1A1A" stroke-width="2"/>`;
+  });
+  svg.innerHTML=`<line x1="0" y1="75" x2="600" y2="75" stroke="#D9D9D9" stroke-dasharray="4 4"/>`+
+    `<path d="${wavePath(state.wave,600,150,16)}" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linejoin="round"/>`+dots;
+}
+function peakValley(){
+  const pv=document.getElementById("peakvalley");
+  if(!state.waveTouched.some(Boolean)){pv.textContent="";return;}
+  const max=Math.max(...state.wave), min=Math.min(...state.wave);
+  const pm=MONTHS.filter((m,i)=>state.wave[i]===max).join("・");
+  const vm=MONTHS.filter((m,i)=>state.wave[i]===min).join("・");
+  pv.textContent=`山：${pm}（${max}） ／ 谷：${vm}（${min}）`;
+}
+
+/* ---- 姿勢チップ ---- */
+const chips=document.getElementById("chips");
+STANCES.forEach(st=>{
+  const c=document.createElement("div"); c.className="chip"; c.textContent=st;
+  c.onclick=()=>{c.classList.toggle("on");
+    state.stances=[...chips.querySelectorAll(".chip.on")].map(x=>x.textContent);
+    progress(); save();};
+  chips.appendChild(c);
+});
+document.getElementById("stanceNote").addEventListener("input",e=>{state.stanceNote=e.target.value; progress(); save();});
+document.getElementById("movedMonth").addEventListener("change",e=>{state.movedMonth=e.target.value; progress(); save();});
+document.getElementById("movedWhat").addEventListener("input",e=>{state.movedWhat=e.target.value; progress(); save();});
+document.getElementById("feel").addEventListener("input",e=>{state.feel=e.target.value; progress(); save();});
+document.getElementById("from").addEventListener("input",e=>{state.from=e.target.value; progress(); save();});
+document.getElementById("value").addEventListener("input",e=>{state.value=e.target.value; progress(); save();});
+document.getElementById("want").addEventListener("input",e=>{state.want=e.target.value; progress(); save();});
+document.getElementById("uname").addEventListener("input",e=>{state.name=e.target.value; save();});
+document.getElementById("uname").addEventListener("change",load);
+document.getElementById("urole").addEventListener("input",e=>{state.role=e.target.value; save();});
+
+/* ---- 進捗 ---- */
+function stepDone(idx){
+  switch(idx){
+    case 0: return state.waveTouched.filter(Boolean).length>=6;
+    case 1: return state.waveTouched.some(Boolean);
+    case 2: return Object.values(state.signs).some(v=>v&&v.trim());
+    case 3: return state.stances.length>0||state.stanceNote.trim().length>0;
+    case 4: return !!(state.movedMonth&&state.movedWhat.trim());
+    case 5: return state.feel.trim()&&state.from.trim()&&state.value.trim();
+  } return false;
+}
+function progress(){
+  let steps=0; for(let i=0;i<6;i++) if(stepDone(i)) steps++;
+  const pct=Math.round(steps/6*100);
+  document.getElementById("pfill").style.width=pct+"%";
+  document.getElementById("ppct").textContent=pct+"%";
+  const labels=["はじめましょう","いい波です","兆しが見えてきた","半分越えました","あと少し","ラスト一問","やり切りました"];
+  document.getElementById("plabel").textContent=labels[steps];
+  [["s1",0],["s3",2],["s4",3],["s5",4],["s6",5]].forEach(([id,idx])=>{
+    document.getElementById(id).classList.toggle("done", stepDone(idx));
+  });
+  return pct;
+}
+
+/* ---- 端末保存（外部サイト用） ---- */
+let saveTimer=null;
+function skey(){ return "shirushi1:"+(state.name.trim()||"noname"); }
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    try{
+      localStorage.setItem(skey(), JSON.stringify(state));
+      document.getElementById("savemsg").textContent="この端末に保存しました（"+new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})+"）";
+    }catch(e){ document.getElementById("savemsg").textContent="※ この環境では端末保存が使えません（公開サイトでは動きます）"; }
+  },600);
+}
+function load(){
+  try{
+    const raw=localStorage.getItem(skey());
+    if(!raw)return;
+    state={...state,...JSON.parse(raw)};
+    sm.value=state.startMonth;
+    document.getElementById("urole").value=state.role||"";
+    chips.querySelectorAll(".chip").forEach(c=>c.classList.toggle("on",state.stances.includes(c.textContent)));
+    document.getElementById("stanceNote").value=state.stanceNote||"";
+    document.getElementById("movedWhat").value=state.movedWhat||"";
+    document.getElementById("feel").value=state.feel||"";
+    document.getElementById("from").value=state.from||"";
+    document.getElementById("value").value=state.value||"";
+    document.getElementById("want").value=state.want||"";
+    rebuildMonths();
+    document.getElementById("savemsg").textContent="前回の続きから再開しました";
+  }catch(e){}
+}
+
+/* ---- 完了 → フォーム送信 ---- */
+document.getElementById("finishBtn").addEventListener("click",async ()=>{
+  const pct=progress();
+  // 完了カード
+  const card=document.getElementById("doneCard");
+  document.getElementById("dcTitle").textContent=(state.name?state.name+"さん、":"")+(pct===100?"やり切りました。":"ここまで、おつかれさまでした。");
+  document.getElementById("dcWave").innerHTML=`<line x1="0" y1="55" x2="600" y2="55" stroke="#D9D9D9" stroke-dasharray="4 4"/>
+    <path d="${wavePath(state.wave,600,110,12)}" fill="none" stroke="#1A1A1A" stroke-width="2.5"/>`;
+  document.getElementById("dcMoved").textContent=(state.movedMonth?state.movedMonth+"・":"")+(state.movedWhat||"―");
+  document.getElementById("dcFeel").textContent=state.feel||"―";
+  document.getElementById("dcValue").textContent=state.value||"―";
+  card.style.display="block"; card.scrollIntoView({behavior:"smooth"});
+  save();
+  // Googleフォームへ送信（設定済みのときだけ）
+  if(FORM.action){
+    try{
+      const period=MONTHS[0]+"〜"+MONTHS[5];
+      const signsTxt=Object.entries(state.signs).filter(([k,v])=>v&&v.trim())
+        .map(([k,v])=>{const [mi,kk]=k.split("_");return MONTHS[+mi]+" "+kk+"："+v.trim();}).join(" ／ ");
+      const notes="【姿勢】"+(state.stances.join("・")||"―")+(state.stanceNote?"（"+state.stanceNote+"）":"")+"　【兆し】"+(signsTxt||"―");
+      const moved=(state.movedMonth||"―")+"：「"+(state.movedWhat||"―")+"」 ①気持ち＝"+(state.feel||"―")+" ②どこから＝"+(state.from||"―")+" ③大事にしてる＝"+(state.value||"―")+" ④どうしたい＝"+(state.want||"―");
+      const fd=new FormData();
+      fd.append(FORM.fields.name, state.name||"（無記名）");
+      fd.append(FORM.fields.role, state.role||"");
+      fd.append(FORM.fields.period, period);
+      fd.append(FORM.fields.wave, state.wave.join(","));
+      fd.append(FORM.fields.moved, moved);
+      fd.append(FORM.fields.notes, notes);
+      await fetch(FORM.action,{method:"POST",mode:"no-cors",body:fd});
+      document.getElementById("savemsg").textContent="送信しました。ありがとうございました。";
+    }catch(e){
+      document.getElementById("savemsg").textContent="送信できませんでした。電波の良い場所で、もう一度お試しください。";
+    }
+  }
+});
+
+rebuildMonths();
+</script>
+</body>
+</html>
